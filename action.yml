@@ -1,0 +1,11 @@
+name: 'Setup mint'
+description: 'Set up mint swift package manager'
+author: 'irgaly'
+inputs:
+  use-cache:
+    description: 'Cache installed swift tools'
+    required: false
+    default: 'true'
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
