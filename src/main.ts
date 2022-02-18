@@ -66,7 +66,12 @@ async function main() {
         '--depth=1',
         '-b', mintVersion,
         'https://github.com/yonaskolb/Mint.git'])
-      await execute('make', ['-C', `${temp}/Mint`])
+      if (os.platform() == 'darwin') {
+        await execute('make', ['-C', `${temp}/Mint`])
+      } else {
+        await execute('swift', ['build', '-c', 'release'], `${temp}/Mint`)
+        fs.copyFileSync(`${temp}/Mint/.build/release/mint`, '/usr/local/bin/mint')
+      }
       await cache.saveCache(mintPaths, mintCacheKey)
     }
     if (hasMintfile && bootstrap) {
