@@ -53,7 +53,7 @@ async function main() {
     const mintCacheKey = `${cachePrefix}-${process.env['RUNNER_OS']}-irgaly/setup-mint-${mintVersion}`
     const mintPaths = ['/usr/local/bin/mint']
     core.info(`mint cache key: ${mintCacheKey}`)
-    const mintRestored = (await cache.restoreCache(mintPaths, mintCacheKey) != undefined)
+    const mintRestored = ((await cache.restoreCache(mintPaths, mintCacheKey)) != undefined)
     if (mintRestored) {
       core.info('/usr/local/bin/mint restored from cache')
     } else {
