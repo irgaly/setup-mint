@@ -38,7 +38,7 @@ async function main() {
     core.info(`bootstrap: ${bootstrap}`)
     core.info(`useCache: ${useCache}`)
     core.info(`cachePrefix: ${cachePrefix}`)
-    let mintVersion = '0.17.0'
+    let mintVersion = 'master'
     const mintFile = path.join(mintDirectory, 'Mintfile')
     const hasMintfile = fs.existsSync(mintFile)
     if (hasMintfile) {
@@ -114,7 +114,8 @@ async function main() {
               })
             for (const installed of installedPackages) {
               core.info(`installed: ${installed}`)
-              if (!defined.includes(installed)) {
+              const short = installed.split('@')![0]
+              if (!defined.includes(installed) && !defined.includes(short)) {
                 core.info(`unisntall: ${installed}`)
                 await execute('mint', ['uninstall', installed])
               }
