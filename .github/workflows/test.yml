@@ -2,11 +2,12 @@ name: Test
 
 on:
   push:
-    - main
+    branches:
+      - main
 
 jobs:
   test-macos:
-    run-on: macos-latest
+    runs-on: macos-latest
     steps:
       - uses: irgaly/setup-mint@main
         with:
@@ -18,7 +19,7 @@ jobs:
           ls -alh ~/.mint
           ls -alh ~/.mint/packages/*
   test-linux:
-    run-on: ubuntu-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: irgaly/setup-mint@main
         with:
