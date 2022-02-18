@@ -19,7 +19,7 @@ jobs:
           mint --version
           mint list
           ls -alh ~/.mint
-          ls -alh ~/.mint/packages/*
+          ls -alh ~/.mint/packages/*/build/*
   test-linux:
     runs-on: ubuntu-latest
     steps:
@@ -33,4 +33,4 @@ jobs:
           mint --version
           mint list
           ls -alh ~/.mint
-          ls -alh ~/.mint/packages/*
+          ls -alh ~/.mint/packages/*/build/*
