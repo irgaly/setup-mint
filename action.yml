@@ -10,6 +10,10 @@ inputs:
     description: 'Cache installed swift tools'
     required: false
     default: 'true'
+  cache-prefix :
+    description: 'Cache key prefix'
+    required: false
+    default: ''
 runs:
   using: 'node12'
   main: 'dist/index.js'
