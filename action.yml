@@ -14,7 +14,7 @@ inputs:
     description: 'Cache installed swift tools'
     required: false
     default: 'true'
-  cache-prefix :
+  cache-prefix:
     description: 'Cache key prefix'
     required: false
     default: ''
