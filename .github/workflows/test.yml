@@ -13,7 +13,8 @@ jobs:
       - uses: irgaly/setup-mint@main
         with:
           mint-directory: example
-      - run: |
+      - shell: bash -xe {0}
+        run: |
           ls -alh /usr/local/bin | grep mint
           mint --version
           mint list
@@ -26,7 +27,8 @@ jobs:
       - uses: irgaly/setup-mint@main
         with:
           mint-directory: example
-      - run: |
+      - shell: bash -xe {0}
+        run: |
           ls -alh /usr/local/bin | grep mint
           mint --version
           mint list
