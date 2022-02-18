@@ -2,6 +2,10 @@ name: 'Setup mint'
 description: 'Set up mint swift package manager'
 author: 'irgaly'
 inputs:
+  bootstrap:
+    description: 'execute mint bootstrap'
+    required: false
+    default: 'true'
   use-cache:
     description: 'Cache installed swift tools'
     required: false
