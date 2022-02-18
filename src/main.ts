@@ -1,14 +1,15 @@
 import * as core from '@actions/core'
 import * as exec from '@actions/exec'
+import { ExecOptions } from '@actions/exec'
 import * as cache from '@actions/cache'
 import * as glob from '@actions/glob'
-import { ExecOptions } from '@actions/exec'
+import { hashFiles } from '@actions/glob'
 import * as fs from 'fs'
 import * as os from 'os'
 import * as path from 'path'
 import { v4 as uuidv4 } from 'uuid'
 
-async function execute(command: string, args: string[] = []): Promise<string> {
+async function execute(command: string, args: string[] = [], cwd?: string): Promise<string> {
   let output = ''
   const options: ExecOptions = {}
   options.listeners = {
@@ -19,21 +20,31 @@ async function execute(command: string, args: string[] = []): Promise<string> {
       console.error(data)
     }
   }
+  if (cwd) {
+    options.cwd = cwd
+  }
   await exec.exec(command, args, options)
   return output
 }
 
 async function main() {
   try {
+    const mintDirectory = core.getInput('mint-directory')
     const bootstrap = (core.getInput('bootstrap') == 'true')
     const useCache = (core.getInput('use-cache') == 'true')
     const cachePrefix = core.getInput('cache-prefix')
+    const clean = (core.getInput('clean') == 'true')
+    core.debug(`mintDirectory: ${mintDirectory}`)
     core.debug(`bootstrap: ${bootstrap}`)
     core.debug(`useCache: ${useCache}`)
+    core.debug(`cachePrefix: ${cachePrefix}`)
     let mintVersion = '0.17.0'
-    if (fs.existsSync('Mintfile')) {
-      const mintfile = fs.readFileSync('Mintfile').toString()
-      const match = mintfile.match(/^\s*yonaskolb\/mint@([^\s#]+)/)
+    const mintFile = path.join(mintDirectory, 'Mintfile')
+    const hasMintfile = fs.existsSync(mintFile)
+    if (hasMintfile) {
+      core.debug(`mintFile exists: ${mintFile}`)
+      const mintFileString = fs.readFileSync(mintFile).toString()
+      const match = mintFileString.match(/^\s*yonaskolb\/mint@([^\s#]+)/)
       if (match) {
         mintVersion = match[1]
         core.debug(`mintVersion from Mintfile: ${mintVersion}`)
@@ -43,8 +54,9 @@ async function main() {
     const mintPaths = ['/usr/local/bin/mint']
     core.debug(`mint cache key: ${mintCacheKey}`)
     const mintRestored = (await cache.restoreCache(mintPaths, mintCacheKey) != undefined)
-    const mintRestored = false
-    if (!mintRestored) {
+    if (mintRestored) {
+      core.info('/usr/local/bin/mint restored from cache')
+    } else {
       const temp = path.join(process.env['RUNNER_TEMP'] || '.', uuidv4())
       fs.mkdirSync(temp, { recursive: true })
       await execute('git',
@@ -56,6 +68,55 @@ async function main() {
         'git@github.com:yonaskolb/Mint.git'])
       await execute('make', ['-C', `${temp}/Mint`])
       await cache.saveCache(mintPaths, mintCacheKey)
+    }
+    if (hasMintfile && bootstrap) {
+      const mintDependencyPaths = ['~/.mint']
+      const mintDependencyCacheKey = `${cachePrefix}-${process.env['RUNNER_OS']}-irgaly/setup-mint-deps-${await hashFiles(mintFile)}`
+      const mintDependencyRestoreKeys = [`${cachePrefix}-${process.env['RUNNER_OS']}-irgaly/setup-mint-deps-`]
+      core.debug(`mint dependency cache key: ${mintDependencyCacheKey}`)
+      let mintDependencyRestored = false
+      if (useCache) {
+        const mintDependencyRestoredKey = await cache.restoreCache(
+          mintDependencyPaths, mintDependencyCacheKey, mintDependencyRestoreKeys
+        )
+        mintDependencyRestored = (mintDependencyRestoredKey == mintDependencyCacheKey)
+      }
+      if (mintDependencyRestored) {
+        core.info('~/.mint restored from cache')
+      } else {
+        await execute('mint', ['bootstrap'], mintDirectory)
+        if (useCache) {
+          if (clean) {
+            const mintFileString = fs.readFileSync(mintFile).toString()
+            const defined = mintFileString.split('\n').map(line => {
+              return line.match(/^\s*([^\s#]+)/) || []
+            }).filter(match => { return match.length })
+              .map(match => { return match[1] })
+            defined.forEach(v => {
+              core.debug(`Mintfile defined: ${v}`)
+            })
+            const packages = `${os.homedir()}/.mint/packages`
+            fs.readdirSync(packages)
+              .filter(item => {
+                return !item.startsWith('.')
+              }).flatMap(repo => {
+                const [owner, name] = repo.split('_').slice(-2)
+                return fs.readdirSync(`${packages}/${repo}/build`).filter(item => {
+                  return !item.startsWith('.')
+                }).map(version => {
+                  return `${owner}/${name}@${version}`
+                })
+              }).forEach(installed => {
+                core.debug(`installed: ${installed}`)
+                if (!defined.includes(installed)) {
+                  core.debug(`unisntall: ${installed}`)
+                  await execute('mint', ['uninstall', installed])
+                }
+              })
+          }
+          await cache.saveCache(mintDependencyPaths, mintDependencyCacheKey)
+        }
+      }
     }
   } catch (error) {
     if (error instanceof Error) {

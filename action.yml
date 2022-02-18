@@ -2,6 +2,10 @@ name: 'Setup mint'
 description: 'Set up mint swift package manager'
 author: 'irgaly'
 inputs:
+  mint-directory:
+    description: 'a directory of Mintfile'
+    required: false
+    default: '.'
   bootstrap:
     description: 'execute mint bootstrap'
     required: false
@@ -14,6 +18,10 @@ inputs:
     description: 'Cache key prefix'
     required: false
     default: ''
+  clean:
+    description: 'uninstall commands which is not in Mintfile'
+    required: false
+    default: 'true'
 runs:
   using: 'node12'
   main: 'dist/index.js'
