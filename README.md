@@ -9,7 +9,7 @@ This action supports:
 
 ## Usage
 
-Add mint version to Mintfile
+Add mint version to Mintfile (optional)
 
 `Mintfile`
 
@@ -27,9 +27,10 @@ Use this action in a workflow.
 
 setup-mint step will do:
 
-* Get mint version from Mintfile
+* Retrieve mint version from Mintfile
+  * Use mint@master if mint version is not specified in Mintfile
 * Install mint to /usr/local/bin/mint
-* Cache mint for next run
+* Cache mint binary for next run
 * Run `mint bootstrap` to install swift commands
 * Cleanup unused swift commands (not listed in Mintfile)
 * Cache swift commands for next run
