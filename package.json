@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "main": "lib/main.js",
   "private": true,
+  "license": "Apache-2.0",
   "scripts": {
     "build": "ncc build --source-map --license licenses.txt",
     "main": "ts-node src/main.ts"
