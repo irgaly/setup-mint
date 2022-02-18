@@ -96,7 +96,7 @@ async function main() {
               core.debug(`Mintfile defined: ${v}`)
             })
             const packages = `${os.homedir()}/.mint/packages`
-            fs.readdirSync(packages)
+            const installedPackages = fs.readdirSync(packages)
               .filter(item => {
                 return !item.startsWith('.')
               }).flatMap(repo => {
@@ -106,13 +106,14 @@ async function main() {
                 }).map(version => {
                   return `${owner}/${name}@${version}`
                 })
-              }).forEach(installed => {
-                core.debug(`installed: ${installed}`)
-                if (!defined.includes(installed)) {
-                  core.debug(`unisntall: ${installed}`)
-                  await execute('mint', ['uninstall', installed])
-                }
               })
+            for (const installed of installedPackages) {
+              core.debug(`installed: ${installed}`)
+              if (!defined.includes(installed)) {
+                core.debug(`unisntall: ${installed}`)
+                await execute('mint', ['uninstall', installed])
+              }
+            }
           }
           await cache.saveCache(mintDependencyPaths, mintDependencyCacheKey)
         }
