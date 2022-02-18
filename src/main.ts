@@ -2,7 +2,7 @@ import * as core from '@actions/core'
 import * as exec from '@actions/exec'
 import { ExecOptions } from '@actions/exec'
 
-const execute = async (command: string): Promise<string> => {
+async function execute(command: string): Promise<string> {
   let output = ''
   const options: ExecOptions = {}
   options.listeners = {
@@ -13,17 +13,19 @@ const execute = async (command: string): Promise<string> => {
       console.error(data)
     }
   }
-  await exec.exec(command, null, options)
+  await exec.exec(command, [], options)
   return output
 }
 
-async function run() {
+async function main() {
   try {
-    const useCache = core.getInput('use-cache')
-    core.debug("useCache: ${useCache}")
+    const useCache = (core.getInput('use-cache') == 'true')
+    core.debug(`useCache: ${useCache}`)
   } catch (error) {
-    core.setFailed(error.message)
+    if (error instanceof Error) {
+      core.setFailed(error.message)
+    }
   }
 }
 
-run()
+main()
