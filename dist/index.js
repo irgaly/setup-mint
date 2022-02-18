@@ -59228,25 +59228,25 @@ async function main() {
         const useCache = (core.getInput('use-cache') == 'true');
         const cachePrefix = core.getInput('cache-prefix');
         const clean = (core.getInput('clean') == 'true');
-        core.debug(`mintDirectory: ${mintDirectory}`);
-        core.debug(`bootstrap: ${bootstrap}`);
-        core.debug(`useCache: ${useCache}`);
-        core.debug(`cachePrefix: ${cachePrefix}`);
+        core.info(`mintDirectory: ${mintDirectory}`);
+        core.info(`bootstrap: ${bootstrap}`);
+        core.info(`useCache: ${useCache}`);
+        core.info(`cachePrefix: ${cachePrefix}`);
         let mintVersion = '0.17.0';
         const mintFile = path.join(mintDirectory, 'Mintfile');
         const hasMintfile = fs.existsSync(mintFile);
         if (hasMintfile) {
-            core.debug(`mintFile exists: ${mintFile}`);
+            core.info(`mintFile exists: ${mintFile}`);
             const mintFileString = fs.readFileSync(mintFile).toString();
             const match = mintFileString.match(/^\s*yonaskolb\/mint@([^\s#]+)/);
             if (match) {
                 mintVersion = match[1];
-                core.debug(`mintVersion from Mintfile: ${mintVersion}`);
+                core.info(`mintVersion from Mintfile: ${mintVersion}`);
             }
         }
         const mintCacheKey = `${cachePrefix}-${process.env['RUNNER_OS']}-irgaly/setup-mint-${mintVersion}`;
         const mintPaths = ['/usr/local/bin/mint'];
-        core.debug(`mint cache key: ${mintCacheKey}`);
+        core.info(`mint cache key: ${mintCacheKey}`);
         const mintRestored = (await cache.restoreCache(mintPaths, mintCacheKey) != undefined);
         if (mintRestored) {
             core.info('/usr/local/bin/mint restored from cache');
@@ -59259,7 +59259,7 @@ async function main() {
                 'clone',
                 '--depth=1',
                 '-b', mintVersion,
-                'git@github.com:yonaskolb/Mint.git']);
+                'https://github.com/yonaskolb/Mint.git']);
             await execute('make', ['-C', `${temp}/Mint`]);
             await cache.saveCache(mintPaths, mintCacheKey);
         }
@@ -59267,7 +59267,7 @@ async function main() {
             const mintDependencyPaths = ['~/.mint'];
             const mintDependencyCacheKey = `${cachePrefix}-${process.env['RUNNER_OS']}-irgaly/setup-mint-deps-${await (0, glob_1.hashFiles)(mintFile)}`;
             const mintDependencyRestoreKeys = [`${cachePrefix}-${process.env['RUNNER_OS']}-irgaly/setup-mint-deps-`];
-            core.debug(`mint dependency cache key: ${mintDependencyCacheKey}`);
+            core.info(`mint dependency cache key: ${mintDependencyCacheKey}`);
             let mintDependencyRestored = false;
             if (useCache) {
                 const mintDependencyRestoredKey = await cache.restoreCache(mintDependencyPaths, mintDependencyCacheKey, mintDependencyRestoreKeys);
@@ -59286,7 +59286,7 @@ async function main() {
                         }).filter(match => { return match.length; })
                             .map(match => { return match[1]; });
                         defined.forEach(v => {
-                            core.debug(`Mintfile defined: ${v}`);
+                            core.info(`Mintfile defined: ${v}`);
                         });
                         const packages = `${os.homedir()}/.mint/packages`;
                         const installedPackages = fs.readdirSync(packages)
@@ -59301,9 +59301,9 @@ async function main() {
                             });
                         });
                         for (const installed of installedPackages) {
-                            core.debug(`installed: ${installed}`);
+                            core.info(`installed: ${installed}`);
                             if (!defined.includes(installed)) {
-                                core.debug(`unisntall: ${installed}`);
+                                core.info(`unisntall: ${installed}`);
                                 await execute('mint', ['uninstall', installed]);
                             }
                         }
