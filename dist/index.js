@@ -59232,7 +59232,7 @@ async function main() {
         core.info(`bootstrap: ${bootstrap}`);
         core.info(`useCache: ${useCache}`);
         core.info(`cachePrefix: ${cachePrefix}`);
-        let mintVersion = '0.17.0';
+        let mintVersion = 'master';
         const mintFile = path.join(mintDirectory, 'Mintfile');
         const hasMintfile = fs.existsSync(mintFile);
         if (hasMintfile) {
@@ -59260,7 +59260,13 @@ async function main() {
                 '--depth=1',
                 '-b', mintVersion,
                 'https://github.com/yonaskolb/Mint.git']);
-            await execute('make', ['-C', `${temp}/Mint`]);
+            if (os.platform() == 'darwin') {
+                await execute('make', ['-C', `${temp}/Mint`]);
+            }
+            else {
+                await execute('swift', ['build', '-c', 'release'], `${temp}/Mint`);
+                fs.copyFileSync(`${temp}/Mint/.build/release/mint`, '/usr/local/bin/mint');
+            }
             await cache.saveCache(mintPaths, mintCacheKey);
         }
         if (hasMintfile && bootstrap) {
@@ -59297,14 +59303,22 @@ async function main() {
                             return fs.readdirSync(`${packages}/${repo}/build`).filter(item => {
                                 return !item.startsWith('.');
                             }).map(version => {
-                                return `${owner}/${name}@${version}`;
+                                return {
+                                    build: `${packages}/${repo}/build/${version}`,
+                                    name: `${owner}/${name}@${version}`,
+                                    short: `${owner}/${name}`
+                                };
                             });
                         });
                         for (const installed of installedPackages) {
-                            core.info(`installed: ${installed}`);
-                            if (!defined.includes(installed)) {
-                                core.info(`unisntall: ${installed}`);
-                                await execute('mint', ['uninstall', installed]);
+                            core.info(`installed: ${installed.name}`);
+                            if (!defined.includes(installed.name) && !defined.includes(installed.short)) {
+                                core.info(`=> unisntall: ${installed.name}`);
+                                fs.rmdirSync(installed.build, { recursive: true });
+                                const builds = path.dirname(installed.build);
+                                if (fs.readdirSync(builds).length == 0) {
+                                    fs.rmdirSync(path.dirname(builds), { recursive: true });
+                                }
                             }
                         }
                     }
