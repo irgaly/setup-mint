@@ -109,15 +109,18 @@ async function main() {
                 return fs.readdirSync(`${packages}/${repo}/build`).filter(item => {
                   return !item.startsWith('.')
                 }).map(version => {
-                  return `${owner}/${name}@${version}`
+                  return {
+                    build: `${packages}/${repo}/build/${version}`,
+                    name: `${owner}/${name}@${version}`,
+                    short: `${owner}/${name}`
+                  }
                 })
               })
             for (const installed of installedPackages) {
-              core.info(`installed: ${installed}`)
-              const short = installed.split('@')![0]
-              if (!defined.includes(installed) && !defined.includes(short)) {
-                core.info(`unisntall: ${installed}`)
-                await execute('mint', ['uninstall', installed])
+              core.info(`installed: ${installed.name}`)
+              if (!defined.includes(installed.name) && !defined.includes(installed.short)) {
+                core.info(`unisntall: ${installed.name}`)
+                fs.rmdirSync(installed.build, { recursive: true })
               }
             }
           }
