@@ -1,6 +1,9 @@
-name: 'Setup mint'
+name: 'Setup Mint Swift Package Manager'
 description: 'Set up mint swift package manager'
 author: 'irgaly'
+branding:
+  icon: 'download'
+  color: 'green'
 inputs:
   mint-directory:
     description: 'a directory of Mintfile'
