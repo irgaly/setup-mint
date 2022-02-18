@@ -1,0 +1,31 @@
+name: Test
+
+on:
+  push:
+    - main
+
+jobs:
+  test-macos:
+    run-on: macos-latest
+    steps:
+      - uses: irgaly/setup-mint@main
+        with:
+          mint-directory: example
+      - run: |
+          ls -alh /usr/local/bin | grep mint
+          mint --version
+          mint list
+          ls -alh ~/.mint
+          ls -alh ~/.mint/packages/*
+  test-linux:
+    run-on: ubuntu-latest
+    steps:
+      - uses: irgaly/setup-mint@main
+        with:
+          mint-directory: example
+      - run: |
+          ls -alh /usr/local/bin | grep mint
+          mint --version
+          mint list
+          ls -alh ~/.mint
+          ls -alh ~/.mint/packages/*
