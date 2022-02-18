@@ -121,6 +121,10 @@ async function main() {
               if (!defined.includes(installed.name) && !defined.includes(installed.short)) {
                 core.info(`unisntall: ${installed.name}`)
                 fs.rmdirSync(installed.build, { recursive: true })
+                const builds = path.dirname(installed.build)
+                if (fs.readdirSync(builds).length == 0) {
+                  fs.rmdirSync(path.dirname(builds), { recursive: true })
+                }
               }
             }
           }
