@@ -84,7 +84,7 @@ async function main() {
       if (mintDependencyRestored) {
         core.info('~/.mint restored from cache')
       } else {
-        await execute('mint', ['bootstrap'], mintDirectory)
+        await execute('mint', ['bootstrap', '-v', '-m', `${mintFile}`])
         if (useCache) {
           if (clean) {
             const mintFileString = fs.readFileSync(mintFile).toString()
