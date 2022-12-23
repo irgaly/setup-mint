@@ -64130,6 +64130,12 @@ async function execute(command, args = [], cwd) {
     await exec.exec(command, args, options);
     return output;
 }
+/**
+ * return true if the child path is under the parent path in UNIX file system.
+ */
+function pathContains(parent, child) {
+    return path.relative(parent, child).startsWith("../");
+}
 async function main() {
     try {
         const mintDirectory = core.getInput('mint-directory');
@@ -64179,17 +64185,28 @@ async function main() {
             await cache.saveCache(mintPaths, mintCacheKey);
         }
         if (hasMintfile && bootstrap) {
-            const mintDependencyPaths = ['~/.mint'];
+            const mintDirectory = process.env['MINT_PATH'] || '~/.mint';
+            const mintBinaryDirectory = process.env['MINT_LINK_PATH'] || '~/.mint/bin';
+            const mintBinaryNeedsCache = pathContains(mintDirectory, mintBinaryDirectory);
+            const mintPackagesDirectory = `${mintDirectory}/packages`;
+            const mintDependencyPaths = [mintDirectory];
             const mintDependencyCacheKey = `${cachePrefix}-${process.env['RUNNER_OS']}-irgaly/setup-mint-deps-${await (0, glob_1.hashFiles)(mintFile)}`;
             const mintDependencyRestoreKeys = [`${cachePrefix}-${process.env['RUNNER_OS']}-irgaly/setup-mint-deps-`];
+            const mintBinaryPaths = [mintBinaryDirectory];
+            const mintBinaryCacheKey = `${cachePrefix}-${process.env['RUNNER_OS']}-irgaly/setup-mint-bin-${await (0, glob_1.hashFiles)(mintFile)}`;
+            const mintBinaryRestoreKeys = [`${cachePrefix}-${process.env['RUNNER_OS']}-irgaly/setup-mint-bin-`];
             core.info(`mint dependency cache key: ${mintDependencyCacheKey}`);
+            core.info(`mint binary cache key: ${mintBinaryCacheKey}`);
             let mintDependencyRestored = false;
             if (useCache) {
                 const mintDependencyRestoredKey = await cache.restoreCache(mintDependencyPaths, mintDependencyCacheKey, mintDependencyRestoreKeys);
+                if (mintBinaryNeedsCache) {
+                    await cache.restoreCache(mintBinaryPaths, mintBinaryCacheKey, mintBinaryRestoreKeys);
+                }
                 mintDependencyRestored = (mintDependencyRestoredKey == mintDependencyCacheKey);
             }
             if (mintDependencyRestored) {
-                core.info('~/.mint restored from cache');
+                core.info(`${mintDirectory} / ${mintBinaryDirectory} restored from cache`);
             }
             else {
                 await execute('mint', ['bootstrap', '-v', '-m', `${mintFile}`]);
@@ -64203,17 +64220,16 @@ async function main() {
                         defined.forEach(v => {
                             core.info(`Mintfile defined: ${v}`);
                         });
-                        const packages = `${os.homedir()}/.mint/packages`;
-                        const installedPackages = fs.readdirSync(packages)
+                        const installedPackages = fs.readdirSync(mintPackagesDirectory)
                             .filter(item => {
                             return !item.startsWith('.');
                         }).flatMap(repo => {
                             const [owner, name] = repo.split('_').slice(-2);
-                            return fs.readdirSync(`${packages}/${repo}/build`).filter(item => {
+                            return fs.readdirSync(`${mintPackagesDirectory}/${repo}/build`).filter(item => {
                                 return !item.startsWith('.');
                             }).map(version => {
                                 return {
-                                    build: `${packages}/${repo}/build/${version}`,
+                                    build: `${mintPackagesDirectory}/${repo}/build/${version}`,
                                     name: `${owner}/${name}@${version}`,
                                     short: `${owner}/${name}`
                                 };
@@ -64223,7 +64239,7 @@ async function main() {
                             core.info(`installed: ${installed.name}`);
                             if (!defined.includes(installed.name) && !defined.includes(installed.short)) {
                                 core.info(`=> unisntall: ${installed.name}`);
-                                fs.rmdirSync(installed.build, { recursive: true });
+                                await execute('mint', ['uninstall', `${installed.name}`]);
                                 const builds = path.dirname(installed.build);
                                 if (fs.readdirSync(builds).length == 0) {
                                     fs.rmdirSync(path.dirname(builds), { recursive: true });
@@ -64232,6 +64248,9 @@ async function main() {
                         }
                     }
                     await cache.saveCache(mintDependencyPaths, mintDependencyCacheKey);
+                    if (mintBinaryNeedsCache) {
+                        await cache.saveCache(mintBinaryPaths, mintBinaryCacheKey);
+                    }
                 }
             }
         }
