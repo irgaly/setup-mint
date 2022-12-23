@@ -31,7 +31,7 @@ async function execute(command: string, args: string[] = [], cwd?: string): Prom
  * return true if the child path is under the parent path in UNIX file system.
  */
 function pathContains(parent: string, child: string): boolean {
-  return path.relative(parent, child).startsWith("../")
+  return !path.relative(parent, child).startsWith("../")
 }
 
 async function main() {
@@ -84,7 +84,7 @@ async function main() {
     if (hasMintfile && bootstrap) {
       const mintDirectory = process.env['MINT_PATH'] || '~/.mint'
       const mintBinaryDirectory = process.env['MINT_LINK_PATH'] || '~/.mint/bin'
-      const mintBinaryNeedsCache = pathContains(mintDirectory, mintBinaryDirectory)
+      const mintBinaryNeedsCache = !pathContains(mintDirectory, mintBinaryDirectory)
       const mintPackagesDirectory = `${mintDirectory}/packages`
       const mintDependencyPaths = [mintDirectory]
       const mintDependencyCacheKey = `${cachePrefix}-${process.env['RUNNER_OS']}-irgaly/setup-mint-deps-${await hashFiles(mintFile)}`
