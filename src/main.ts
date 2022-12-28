@@ -82,8 +82,8 @@ async function main() {
       await cache.saveCache(mintPaths, mintCacheKey)
     }
     if (hasMintfile && bootstrap) {
-      const mintDirectory = process.env['MINT_PATH'] || '~/.mint'
-      const mintBinaryDirectory = process.env['MINT_LINK_PATH'] || '~/.mint/bin'
+      const mintDirectory = (process.env['MINT_PATH'] || '~/.mint').replace(/^~\//, `${os.homedir()}/`)
+      const mintBinaryDirectory = (process.env['MINT_LINK_PATH'] || '~/.mint/bin').replace(/^~\//, `${os.homedir()}/`)
       const mintBinaryNeedsCache = !pathContains(mintDirectory, mintBinaryDirectory)
       const mintPackagesDirectory = `${mintDirectory}/packages`
       const mintDependencyPaths = [mintDirectory]
