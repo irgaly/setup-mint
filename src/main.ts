@@ -57,7 +57,7 @@ async function main() {
         core.info(`mintVersion from Mintfile: ${mintVersion}`)
       }
     }
-    const mintCacheKey = `${cachePrefix}-${process.env['RUNNER_OS']}-irgaly/setup-mint-${mintVersion}`
+    const mintCacheKey = `${cachePrefix}-${process.env['RUNNER_OS']}-${process.env['RUNNER_ARCH']}-irgaly/setup-mint-${mintVersion}`
     const mintPaths = ['/usr/local/bin/mint']
     core.info(`mint cache key: ${mintCacheKey}`)
     const mintRestored = ((await cache.restoreCache(mintPaths, mintCacheKey)) != undefined)
@@ -87,11 +87,11 @@ async function main() {
       const mintBinaryNeedsCache = !pathContains(mintDirectory, mintBinaryDirectory)
       const mintPackagesDirectory = `${mintDirectory}/packages`
       const mintDependencyPaths = [mintDirectory]
-      const mintDependencyCacheKey = `${cachePrefix}-${process.env['RUNNER_OS']}-irgaly/setup-mint-deps-${await hashFiles(mintFile)}`
-      const mintDependencyRestoreKeys = [`${cachePrefix}-${process.env['RUNNER_OS']}-irgaly/setup-mint-deps-`]
+      const mintDependencyCacheKey = `${cachePrefix}-${process.env['RUNNER_OS']}-${process.env['RUNNER_ARCH']}-irgaly/setup-mint-deps-${await hashFiles(mintFile)}`
+      const mintDependencyRestoreKeys = [`${cachePrefix}-${process.env['RUNNER_OS']}-${process.env['RUNNER_ARCH']}-irgaly/setup-mint-deps-`]
       const mintBinaryPaths = [mintBinaryDirectory]
-      const mintBinaryCacheKey = `${cachePrefix}-${process.env['RUNNER_OS']}-irgaly/setup-mint-bin-${await hashFiles(mintFile)}`
-      const mintBinaryRestoreKeys = [`${cachePrefix}-${process.env['RUNNER_OS']}-irgaly/setup-mint-bin-`]
+      const mintBinaryCacheKey = `${cachePrefix}-${process.env['RUNNER_OS']}-${process.env['RUNNER_ARCH']}-irgaly/setup-mint-bin-${await hashFiles(mintFile)}`
+      const mintBinaryRestoreKeys = [`${cachePrefix}-${process.env['RUNNER_OS']}-${process.env['RUNNER_ARCH']}-irgaly/setup-mint-bin-`]
       core.info(`mint dependency cache key: ${mintDependencyCacheKey}`)
       core.info(`mint binary cache key: ${mintBinaryCacheKey}`)
       let mintDependencyRestored = false
