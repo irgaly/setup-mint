@@ -34,6 +34,17 @@ function pathContains(parent: string, child: string): boolean {
   return !path.relative(parent, child).startsWith("../")
 }
 
+// Caching may throw errors for legitimate reasons that should not fail the action.
+// Example: Race condition between multiple github runners where both try to save cache with the same key at the same time. 
+// You only need 1 of the runners to save the cache. The other runners can gracefully ignore the error and continue running. 
+async function saveCache(paths: string[], key: string): Promise<void> {
+  try {
+    await cache.saveCache(paths, key)  
+  } catch (error) {
+    core.warning(`Failed to cache ${key}. Error thrown: ${error}`)
+  }
+}
+
 async function main() {
   try {
     const mintDirectory = core.getInput('mint-directory')
@@ -79,7 +90,8 @@ async function main() {
         await execute('swift', ['build', '-c', 'release'], `${temp}/Mint`)
         fs.copyFileSync(`${temp}/Mint/.build/release/mint`, '/usr/local/bin/mint')
       }
-      await cache.saveCache(mintPaths, mintCacheKey)
+
+      await saveCache(mintPaths, mintCacheKey)
     }
     if (hasMintfile && bootstrap) {
       const mintDirectory = (process.env['MINT_PATH'] || '~/.mint').replace(/^~\//, `${os.homedir()}/`)
@@ -145,9 +157,9 @@ async function main() {
               }
             }
           }
-          await cache.saveCache(mintDependencyPaths, mintDependencyCacheKey)
+          await saveCache(mintDependencyPaths, mintDependencyCacheKey)
           if (mintBinaryNeedsCache) {
-            await cache.saveCache(mintBinaryPaths, mintBinaryCacheKey)
+            await saveCache(mintBinaryPaths, mintBinaryCacheKey)
           }
         }
       }
