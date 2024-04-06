@@ -9,18 +9,18 @@
     "main": "ts-node src/main.ts"
   },
   "dependencies": {
-    "@actions/cache": "^1.0.9",
-    "@actions/core": "^1.6.0",
-    "@actions/exec": "^1.0.4",
-    "@actions/glob": "^0.2.0",
-    "@actions/tool-cache": "^1.7.1",
-    "uuid": "^8.3.2"
+    "@actions/cache": "3.2.4",
+    "@actions/core": "1.10.1",
+    "@actions/exec": "1.1.1",
+    "@actions/glob": "0.4.0",
+    "@actions/tool-cache": "2.0.1",
+    "uuid": "9.0.1"
   },
   "devDependencies": {
-    "@types/node": "^20.6.0",
-    "@types/uuid": "^8.3.4",
-    "@vercel/ncc": "^0.34.0",
-    "ts-node": "^10.9.1",
-    "typescript": "^4.9.3"
+    "@types/node": "20.12.5",
+    "@types/uuid": "9.0.8",
+    "@vercel/ncc": "0.38.1",
+    "ts-node": "10.9.2",
+    "typescript": "5.4.4"
   }
 }
