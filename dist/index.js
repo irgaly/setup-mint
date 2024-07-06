@@ -83011,12 +83011,14 @@ async function main() {
                 core.info(`mintVersion from Mintfile: ${mintVersion}`);
             }
         }
+        const binaryDirectory = `${process.env['HOME']}/bin`;
+        const mintPath = `${binaryDirectory}/mint`;
         const mintCacheKey = `${cachePrefix}-${process.env['RUNNER_OS']}-${process.env['RUNNER_ARCH']}-irgaly/setup-mint-${mintVersion}`;
-        const mintPaths = ['/usr/local/bin/mint'];
+        const mintPaths = [mintPath];
         core.info(`mint cache key: ${mintCacheKey}`);
         const mintRestored = ((await cache.restoreCache(mintPaths, mintCacheKey)) != undefined);
         if (mintRestored) {
-            core.info('/usr/local/bin/mint restored from cache');
+            core.info(`${mintPath} restored from cache`);
         }
         else {
             const temp = path.join(process.env['RUNNER_TEMP'] || '.', (0, uuid_1.v4)());
@@ -83032,7 +83034,8 @@ async function main() {
             }
             else {
                 await execute('swift', ['build', '-c', 'release'], `${temp}/Mint`);
-                fs.copyFileSync(`${temp}/Mint/.build/release/mint`, '/usr/local/bin/mint');
+                fs.mkdirSync(binaryDirectory, { recursive: true });
+                fs.copyFileSync(`${temp}/Mint/.build/release/mint`, mintPath);
             }
             await saveCache(mintPaths, mintCacheKey);
         }
