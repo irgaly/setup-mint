@@ -14,11 +14,11 @@
     "@actions/exec": "1.1.1",
     "@actions/glob": "0.4.0",
     "@actions/tool-cache": "2.0.1",
-    "uuid": "9.0.1"
+    "uuid": "10.0.0"
   },
   "devDependencies": {
     "@types/node": "20.14.10",
-    "@types/uuid": "9.0.8",
+    "@types/uuid": "10.0.0",
     "@vercel/ncc": "0.38.1",
     "ts-node": "10.9.2",
     "typescript": "5.4.4"
