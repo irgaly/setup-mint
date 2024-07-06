@@ -29,7 +29,7 @@ setup-mint step will do:
 
 * Retrieve mint version from Mintfile
   * Use mint@master if mint version is not specified in Mintfile
-* Install mint to /usr/local/bin/mint
+* Install mint to $HOME/mint
 * Cache mint binary for next run
 * Run `mint bootstrap` to install swift commands
 * Cleanup unused swift commands (not listed in Mintfile)

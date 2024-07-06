@@ -68,7 +68,8 @@ async function main() {
         core.info(`mintVersion from Mintfile: ${mintVersion}`)
       }
     }
-    const binaryDirectory = `${process.env['HOME']}/bin`
+    const binaryDirectoryPrefix = `${process.env['HOME']}`
+    const binaryDirectory = `${binaryDirectoryPrefix}/bin`
     const mintPath = `${binaryDirectory}/mint`
     const mintCacheKey = `${cachePrefix}-${process.env['RUNNER_OS']}-${process.env['RUNNER_ARCH']}-irgaly/setup-mint-${mintVersion}`
     const mintPaths = [mintPath]
@@ -87,7 +88,7 @@ async function main() {
         '-b', mintVersion,
         'https://github.com/yonaskolb/Mint.git'])
       if (os.platform() == 'darwin') {
-        await execute('make', ['-C', `${temp}/Mint`])
+        await execute('make', ['-C', `${temp}/Mint`, `PREFIX=${binaryDirectoryPrefix}`])
       } else {
         await execute('swift', ['build', '-c', 'release'], `${temp}/Mint`)
         fs.mkdirSync(binaryDirectory, { recursive: true })
@@ -122,7 +123,7 @@ async function main() {
       if (mintDependencyRestored) {
         core.info(`${mintDirectory} / ${mintBinaryDirectory} restored from cache`)
       } else {
-        await execute('mint', ['bootstrap', '-v', '-m', `${mintFile}`])
+        await execute(mintPath, ['bootstrap', '-v', '-m', `${mintFile}`])
         if (useCache) {
           if (clean) {
             const mintFileString = fs.readFileSync(mintFile).toString()
@@ -152,7 +153,7 @@ async function main() {
               core.info(`installed: ${installed.name}`)
               if (!defined.includes(installed.name) && !defined.includes(installed.short)) {
                 core.info(`=> unisntall: ${installed.name}`)
-                await execute('mint', ['uninstall', `${installed.name}`])
+                await execute(mintPath, ['uninstall', `${installed.name}`])
                 const builds = path.dirname(installed.build)
                 if (fs.readdirSync(builds).length == 0) {
                   fs.rmdirSync(path.dirname(builds), { recursive: true })
