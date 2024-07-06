@@ -1,3 +1,10 @@
+# v1.5.0 - 2024/07/06 JST
+
+#### Improve
+
+* put mint executable to $HOME/bin/mint [#24](https://github.com/irgaly/setup-mint/pull/24)
+* fix use $HOME/bin/mint [#25](https://github.com/irgaly/setup-mint/pull/25)
+
 # v1.4.0 - 2024/04/06 JST
 
 #### Improve
