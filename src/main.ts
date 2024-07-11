@@ -135,8 +135,8 @@ async function main() {
         core.info(`${mintPathDirectory} / ${mintBinaryDirectory} restored from cache`)
       } else {
         if (bootstrapLink) {
-          core.info(`execute: mint bootstrap -l -o -v -m ${mintFile}`)
-          await execute(mint, ['bootstrap', '-l', '-o', '-v', '-m', `${mintFile}`])
+          core.info(`execute: mint bootstrap -l -o y -v -m ${mintFile}`)
+          await execute(mint, ['bootstrap', '-l', '-o', 'y', '-v', '-m', `${mintFile}`])
         } else {
           core.info(`execute: mint bootstrap -v -m ${mintFile}`)
           await execute(mint, ['bootstrap', '-v', '-m', `${mintFile}`])
