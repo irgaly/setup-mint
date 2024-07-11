@@ -28,11 +28,11 @@ Use this action in a workflow.
 setup-mint step will do:
 
 * Retrieve mint version from Mintfile
-  * Use mint@master if mint version is not specified in Mintfile
+  * setup-mint will use mint@master if mint version is not specified in Mintfile
 * Install mint to $HOME/mint
 * Cache mint binary for next run
 * Run `mint bootstrap` to install swift commands
-* Cleanup unused swift commands (not listed in Mintfile)
+* Cleanup unused swift commands, that is not listed in Mintfile.
 * Cache swift commands for next run
 
 ## Platform
