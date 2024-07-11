@@ -50,6 +50,8 @@ This action can be used in a macOS runner and a Linux runner.
         mint-executable-directory: /usr/local/bin
         # run mint bootstrap, default: true
         bootstrap: true
+        # add --link to bootstrap, default: false
+        bootstrap-link: false
         # cache swift commands (~/.mint), default: true
         use-cache: true
         # cache key prefix for mint binary cache and swift commands cache, default: ""

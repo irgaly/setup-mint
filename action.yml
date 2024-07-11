@@ -17,6 +17,10 @@ inputs:
     description: 'execute mint bootstrap'
     required: false
     default: 'true'
+  bootstrap-link:
+    description: 'add --link option to bootstrap'
+    required: false
+    default: 'false'
   use-cache:
     description: 'Cache installed swift tools'
     required: false
