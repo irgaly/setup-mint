@@ -7,6 +7,7 @@ Revert v1.5.0's breaking change: $HOME/bin/mint -> /usr/local/bin/mint
 * Add mint-executable-directory option to mint installation directory [#28](https://github.com/irgaly/setup-mint/pull/28)
     * mint will be install to /usr/local/bin/mint
     * add `mint-executable-directory` option
+* Add: bootstrap-link option [#30](https://github.com/irgaly/setup-mint/pull/30)
 
 # v1.5.0 - 2024/07/06 JST
 
