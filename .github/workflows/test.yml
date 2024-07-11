@@ -15,9 +15,9 @@ jobs:
           mint-directory: example
       - shell: bash -xe {0}
         run: |
-          ls -alh "$HOME/bin" | grep mint
-          "$HOME/bin/mint" --version
-          "$HOME/bin/mint" list
+          ls -alh /usr/local/bin | grep mint
+          mint --version
+          mint list
           ls -alh ~/.mint
           ls -alh ~/.mint/packages/*/build/*
   test-linux:
@@ -29,8 +29,8 @@ jobs:
           mint-directory: example
       - shell: bash -xe {0}
         run: |
-          ls -alh "$HOME/bin" | grep mint
-          "$HOME/bin/mint" --version
-          "$HOME/bin/mint" list
+          ls -alh /usr/local/bin | grep mint
+          mint --version
+          mint list
           ls -alh ~/.mint
           ls -alh ~/.mint/packages/*/build/*
