@@ -9,6 +9,10 @@ inputs:
     description: 'a directory of Mintfile'
     required: false
     default: '.'
+  mint-executable-directory:
+    description: 'a directory where mint executable itself will be installed'
+    required: false
+    default: '/usr/local/bin'
   bootstrap:
     description: 'execute mint bootstrap'
     required: false

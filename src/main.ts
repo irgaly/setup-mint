@@ -34,6 +34,13 @@ function pathContains(parent: string, child: string): boolean {
   return !path.relative(parent, child).startsWith("../")
 }
 
+/**
+ * expand `~` to os.homedir()
+ */
+function expandHome(path: string): string {
+  return path.replace(/^~\//, `${os.homedir()}/`)
+}
+
 // Caching may throw errors for legitimate reasons that should not fail the action.
 // Example: Race condition between multiple github runners where both try to save cache with the same key at the same time. 
 // You only need 1 of the runners to save the cache. The other runners can gracefully ignore the error and continue running. 
@@ -47,12 +54,14 @@ async function saveCache(paths: string[], key: string): Promise<void> {
 
 async function main() {
   try {
-    const mintDirectory = core.getInput('mint-directory')
+    const mintDirectory = expandHome(core.getInput('mint-directory'))
+    const mintExecutableDirectory = expandHome(core.getInput('mint-executable-directory'))
     const bootstrap = (core.getInput('bootstrap') == 'true')
     const useCache = (core.getInput('use-cache') == 'true')
     const cachePrefix = core.getInput('cache-prefix')
     const clean = (core.getInput('clean') == 'true')
     core.info(`mintDirectory: ${mintDirectory}`)
+    core.info(`mintExecutableDirectory: ${mintExecutableDirectory}`)
     core.info(`bootstrap: ${bootstrap}`)
     core.info(`useCache: ${useCache}`)
     core.info(`cachePrefix: ${cachePrefix}`)
@@ -68,15 +77,13 @@ async function main() {
         core.info(`mintVersion from Mintfile: ${mintVersion}`)
       }
     }
-    const binaryDirectoryPrefix = `${process.env['HOME']}`
-    const binaryDirectory = `${binaryDirectoryPrefix}/bin`
-    const mintPath = `${binaryDirectory}/mint`
+    const mint = `${mintExecutableDirectory}/mint`
     const mintCacheKey = `${cachePrefix}-${process.env['RUNNER_OS']}-${process.env['RUNNER_ARCH']}-irgaly/setup-mint-${mintVersion}`
-    const mintPaths = [mintPath]
+    const mintPaths = [mint]
     core.info(`mint cache key: ${mintCacheKey}`)
     const mintRestored = ((await cache.restoreCache(mintPaths, mintCacheKey)) != undefined)
     if (mintRestored) {
-      core.info(`${mintPath} restored from cache`)
+      core.info(`${mint} restored from cache`)
     } else {
       const temp = path.join(process.env['RUNNER_TEMP'] || '.', uuidv4())
       fs.mkdirSync(temp, { recursive: true })
@@ -88,21 +95,23 @@ async function main() {
         '-b', mintVersion,
         'https://github.com/yonaskolb/Mint.git'])
       if (os.platform() == 'darwin') {
-        await execute('make', ['-C', `${temp}/Mint`, `PREFIX=${binaryDirectoryPrefix}`])
+        await execute('make', ['build', '-C', `${temp}/Mint`])
+        fs.mkdirSync(mintExecutableDirectory, { recursive: true })
+        fs.copyFileSync(`${temp}/Mint/.build/apple/Products/Release/mint`, mint)
       } else {
         await execute('swift', ['build', '-c', 'release'], `${temp}/Mint`)
-        fs.mkdirSync(binaryDirectory, { recursive: true })
-        fs.copyFileSync(`${temp}/Mint/.build/release/mint`, mintPath)
+        fs.mkdirSync(mintExecutableDirectory, { recursive: true })
+        fs.copyFileSync(`${temp}/Mint/.build/release/mint`, mint)
       }
 
       await saveCache(mintPaths, mintCacheKey)
     }
     if (hasMintfile && bootstrap) {
-      const mintDirectory = (process.env['MINT_PATH'] || '~/.mint').replace(/^~\//, `${os.homedir()}/`)
-      const mintBinaryDirectory = (process.env['MINT_LINK_PATH'] || '~/.mint/bin').replace(/^~\//, `${os.homedir()}/`)
-      const mintBinaryNeedsCache = !pathContains(mintDirectory, mintBinaryDirectory)
-      const mintPackagesDirectory = `${mintDirectory}/packages`
-      const mintDependencyPaths = [mintDirectory]
+      const mintPathDirectory = expandHome(process.env['MINT_PATH'] || '~/.mint')
+      const mintBinaryDirectory = expandHome(process.env['MINT_LINK_PATH'] || '~/.mint/bin')
+      const mintBinaryNeedsCache = !pathContains(mintPathDirectory, mintBinaryDirectory)
+      const mintPackagesDirectory = `${mintPathDirectory}/packages`
+      const mintDependencyPaths = [mintPathDirectory]
       const mintDependencyCacheKey = `${cachePrefix}-${process.env['RUNNER_OS']}-${process.env['RUNNER_ARCH']}-irgaly/setup-mint-deps-${await hashFiles(mintFile)}`
       const mintDependencyRestoreKeys = [`${cachePrefix}-${process.env['RUNNER_OS']}-${process.env['RUNNER_ARCH']}-irgaly/setup-mint-deps-`]
       const mintBinaryPaths = [mintBinaryDirectory]
@@ -121,9 +130,9 @@ async function main() {
         mintDependencyRestored = (mintDependencyRestoredKey == mintDependencyCacheKey)
       }
       if (mintDependencyRestored) {
-        core.info(`${mintDirectory} / ${mintBinaryDirectory} restored from cache`)
+        core.info(`${mintPathDirectory} / ${mintBinaryDirectory} restored from cache`)
       } else {
-        await execute(mintPath, ['bootstrap', '-v', '-m', `${mintFile}`])
+        await execute(mint, ['bootstrap', '-v', '-m', `${mintFile}`])
         if (useCache) {
           if (clean) {
             const mintFileString = fs.readFileSync(mintFile).toString()
@@ -152,8 +161,8 @@ async function main() {
             for (const installed of installedPackages) {
               core.info(`installed: ${installed.name}`)
               if (!defined.includes(installed.name) && !defined.includes(installed.short)) {
-                core.info(`=> unisntall: ${installed.name}`)
-                await execute(mintPath, ['uninstall', `${installed.name}`])
+                core.info(`=> uninstall: ${installed.name}`)
+                await execute(mint, ['uninstall', `${installed.name}`])
                 const builds = path.dirname(installed.build)
                 if (fs.readdirSync(builds).length == 0) {
                   fs.rmdirSync(path.dirname(builds), { recursive: true })
