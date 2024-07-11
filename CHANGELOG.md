@@ -8,6 +8,8 @@ Revert v1.5.0's breaking change: $HOME/bin/mint -> /usr/local/bin/mint
     * mint will be install to /usr/local/bin/mint
     * add `mint-executable-directory` option
 
+# v1.5.0 - 2024/07/06 JST
+
 #### Improve
 
 * put mint executable to $HOME/bin/mint [#24](https://github.com/irgaly/setup-mint/pull/24)
