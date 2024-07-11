@@ -29,7 +29,7 @@ setup-mint step will do:
 
 * Retrieve mint version from Mintfile
   * setup-mint will use mint@master if mint version is not specified in Mintfile
-* Install mint to $HOME/mint
+* Install mint to /usr/local/bin/mint
 * Cache mint binary for next run
 * Run `mint bootstrap` to install swift commands
 * Cleanup unused swift commands, that is not listed in Mintfile.
@@ -46,6 +46,8 @@ This action can be used in a macOS runner and a Linux runner.
       with:
         # a directory contains Mintfile, default: GITHUB_WORKSPACE
         mint-directory: .
+        # a directory where mint executable itself will be installed, default: /usr/local/bin
+        mint-executable-directory: /usr/local/bin
         # run mint bootstrap, default: true
         bootstrap: true
         # cache swift commands (~/.mint), default: true
