@@ -57,12 +57,14 @@ async function main() {
     const mintDirectory = expandHome(core.getInput('mint-directory'))
     const mintExecutableDirectory = expandHome(core.getInput('mint-executable-directory'))
     const bootstrap = (core.getInput('bootstrap') == 'true')
+    const bootstrapLink = (core.getInput('bootstrap-link') == 'true')
     const useCache = (core.getInput('use-cache') == 'true')
     const cachePrefix = core.getInput('cache-prefix')
     const clean = (core.getInput('clean') == 'true')
     core.info(`mintDirectory: ${mintDirectory}`)
     core.info(`mintExecutableDirectory: ${mintExecutableDirectory}`)
     core.info(`bootstrap: ${bootstrap}`)
+    core.info(`bootstrapLink: ${bootstrapLink}`)
     core.info(`useCache: ${useCache}`)
     core.info(`cachePrefix: ${cachePrefix}`)
     let mintVersion = 'master'
@@ -132,7 +134,13 @@ async function main() {
       if (mintDependencyRestored) {
         core.info(`${mintPathDirectory} / ${mintBinaryDirectory} restored from cache`)
       } else {
-        await execute(mint, ['bootstrap', '-v', '-m', `${mintFile}`])
+        if (bootstrapLink) {
+          core.info(`execute: mint bootstrap -v -m ${mintFile}`)
+          await execute(mint, ['bootstrap', '-v', '-m', `${mintFile}`])
+        } else {
+          core.info(`execute: mint bootstrap -l -o -v -m ${mintFile}`)
+          await execute(mint, ['bootstrap', '-l', '-o', '-v', '-m', `${mintFile}`])
+        }
         if (useCache) {
           if (clean) {
             const mintFileString = fs.readFileSync(mintFile).toString()

@@ -19,7 +19,6 @@ jobs:
           mint --version
           mint list
           ls -alh ~/.mint
-          ls -alh ~/.mint/bin
           ls -alh ~/.mint/packages/*/build/*
   test-linux:
     runs-on: ubuntu-latest
@@ -34,5 +33,4 @@ jobs:
           mint --version
           mint list
           ls -alh ~/.mint
-          ls -alh ~/.mint/bin
           ls -alh ~/.mint/packages/*/build/*
