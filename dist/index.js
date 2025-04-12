@@ -96157,7 +96157,7 @@ function v1(options, buf, offset) {
         updateV1State(_state, now, rnds);
         bytes = v1Bytes(rnds, _state.msecs, _state.nsecs, isV6 ? undefined : _state.clockseq, isV6 ? undefined : _state.node, buf, offset);
     }
-    return buf ? bytes : (0, stringify_js_1.unsafeStringify)(bytes);
+    return buf ?? (0, stringify_js_1.unsafeStringify)(bytes);
 }
 function updateV1State(state, now, rnds) {
     state.msecs ??= -Infinity;
@@ -96444,7 +96444,7 @@ function v7(options, buf, offset) {
         updateV7State(_state, now, rnds);
         bytes = v7Bytes(rnds, _state.msecs, _state.seq, buf, offset);
     }
-    return buf ? bytes : (0, stringify_js_1.unsafeStringify)(bytes);
+    return buf ?? (0, stringify_js_1.unsafeStringify)(bytes);
 }
 function updateV7State(state, now, rnds) {
     state.msecs ??= -Infinity;
