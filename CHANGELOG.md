@@ -1,3 +1,9 @@
+# v1.7.0 - 2025/04/20 JST
+
+#### Maintenance
+
+* Update @actions/cache v4 [#41](https://github.com/irgaly/setup-mint/pull/41)
+
 # v1.6.0 - 2024/07/12 JST
 
 Revert v1.5.0's breaking change: $HOME/bin/mint -> /usr/local/bin/mint
