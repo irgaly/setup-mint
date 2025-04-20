@@ -12,6 +12,7 @@
     },
     {
       "groupName": "node",
+      "enabled": false,
       "matchPackageNames": [
         "node"
       ]
