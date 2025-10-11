@@ -1,3 +1,9 @@
+# v1.8.0 - 2025/10/12 JST
+
+#### Maintenance
+
+* Update Node 24 [#62](https://github.com/irgaly/setup-mint/pull/62)
+
 # v1.7.0 - 2025/04/20 JST
 
 #### Maintenance
