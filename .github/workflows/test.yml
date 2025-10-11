@@ -9,7 +9,7 @@ jobs:
   test-macos:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: irgaly/setup-mint@main
         with:
           mint-directory: example
@@ -24,7 +24,7 @@ jobs:
   test-linux:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: irgaly/setup-mint@main
         with:
           mint-directory: example
