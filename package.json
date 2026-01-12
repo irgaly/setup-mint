@@ -9,11 +9,11 @@
     "main": "ts-node src/main.ts"
   },
   "dependencies": {
-    "@actions/cache": "4.1.0",
-    "@actions/core": "1.11.0",
-    "@actions/exec": "1.1.1",
+    "@actions/cache": "5.0.2",
+    "@actions/core": "2.0.2",
+    "@actions/exec": "2.0.0",
     "@actions/glob": "0.5.0",
-    "@actions/tool-cache": "2.0.1",
+    "@actions/tool-cache": "3.0.0",
     "uuid": "13.0.0"
   },
   "devDependencies": {
