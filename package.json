@@ -9,10 +9,10 @@
     "main": "ts-node src/main.ts"
   },
   "dependencies": {
-    "@actions/cache": "6.0.0",
+    "@actions/cache": "6.2.0",
     "@actions/core": "3.0.0",
     "@actions/exec": "3.0.0",
-    "@actions/glob": "0.6.1",
+    "@actions/glob": "0.7.0",
     "@actions/tool-cache": "4.0.0",
     "uuid": "13.0.0"
   },
