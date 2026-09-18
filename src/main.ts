@@ -99,7 +99,12 @@ async function main() {
       if (os.platform() == 'darwin') {
         await execute('make', ['build', '-C', `${temp}/Mint`])
         fs.mkdirSync(mintExecutableDirectory, { recursive: true })
-        fs.copyFileSync(`${temp}/Mint/.build/apple/Products/Release/mint`, mint)
+        try {
+          fs.copyFileSync(`${temp}/Mint/.build/out/Products/Release/mint`, mint)
+        } catch {
+          // for ~ Xcode 26.5 + Swift 6.3: .build/apple/...
+          fs.copyFileSync(`${temp}/Mint/.build/apple/Products/Release/mint`, mint)
+        }
       } else {
         await execute('swift', ['build', '-c', 'release'], `${temp}/Mint`)
         fs.mkdirSync(mintExecutableDirectory, { recursive: true })
