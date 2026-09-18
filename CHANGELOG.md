@@ -1,3 +1,9 @@
+# v1.9.0 - 2026/9/18 JST
+
+#### Improve
+
+* Support Xcode 27.0 + Swift 6.4 build system [#89](https://github.com/irgaly/setup-mint/pull/89)
+
 # v1.8.0 - 2025/10/12 JST
 
 #### Maintenance
